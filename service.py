@@ -1,3 +1,4 @@
+import asyncio
 import time
 
 
@@ -15,6 +16,21 @@ def time_track(func):
 def get_name_and_volatility(file):
     prices = []
     time.sleep(0.1)
+    with open(file, mode='r', encoding='utf8') as f:
+        name = file[7:-4]
+        for line in f:
+            if line[:-1] == 'SECID,TRADETIME,PRICE,QUANTITY':
+                continue
+            split = line.split(',')
+            prices.append(float(split[2]))
+    average_price = (max(prices) + min(prices)) / 2
+    volatility = (max(prices) - min(prices)) / average_price * 100
+    return name, volatility
+
+
+async def async_get_name_and_volatility(file):
+    prices = []
+    await asyncio.sleep(0.1)
     with open(file, mode='r', encoding='utf8') as f:
         name = file[7:-4]
         for line in f:
